@@ -1,0 +1,6 @@
+@Entrevisto_HostAddress = http://localhost:5186
+
+GET {{Entrevisto_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
