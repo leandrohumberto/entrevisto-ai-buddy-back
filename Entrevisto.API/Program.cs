@@ -20,6 +20,16 @@ builder.Services.AddHttpClient<IOpenAIService, OpenAIService>();
 builder.Services.AddScoped<IVagaService, VagaService>();
 builder.Services.AddSingleton<IVagaRepository, VagaRepository>(); // Singleton para o repositório Mongo
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowWebApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:8080") // URL do seu frontend
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers().AddJsonOptions(x =>
 {
     // Serialize enums as strings in API responses
@@ -69,6 +79,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowWebApp");
 
 // Adiciona os middlewares de autenticação e autorização
 app.UseAuthentication();
