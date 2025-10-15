@@ -1,4 +1,4 @@
-using Entrevisto.Application.DTOs;
+using Entrevisto.Application.InputModels;
 using Entrevisto.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +21,7 @@ namespace Entrevisto.API.Controllers
         private string GetUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
 
         [HttpGet]
-        public async Task<IActionResult> GetVagas()
+        public async Task<IActionResult> Get()
         {
             var userId = GetUserId();
             var vagas = await _vagaService.GetAllVagasByUserIdAsync(userId);
@@ -29,7 +29,7 @@ namespace Entrevisto.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetVaga(string id)
+        public async Task<IActionResult> GetById(string id)
         {
             var userId = GetUserId();
             var vaga = await _vagaService.GetVagaByIdAsync(id, userId);
@@ -38,24 +38,24 @@ namespace Entrevisto.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateVaga([FromBody] CreateVagaDto vagaDto)
+        public async Task<IActionResult> Post([FromBody] CreateVagaInputModel inputModel)
         {
             var userId = GetUserId();
-            var novaVaga = await _vagaService.CreateVagaAsync(vagaDto, userId);
-            return CreatedAtAction(nameof(GetVaga), new { id = novaVaga.Id }, novaVaga);
+            var novaVaga = await _vagaService.CreateVagaAsync(inputModel, userId);
+            return CreatedAtAction(nameof(GetById), new { id = novaVaga.Id }, novaVaga);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateVaga(string id, [FromBody] UpdateVagaDto vagaDto)
+        public async Task<IActionResult> Put(string id, [FromBody] UpdateVagaInputModel inputModel)
         {
             var userId = GetUserId();
-            var success = await _vagaService.UpdateVagaAsync(id, vagaDto, userId);
+            var success = await _vagaService.UpdateVagaAsync(id, inputModel, userId);
             if (!success) return NotFound();
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteVaga(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             var userId = GetUserId();
             var success = await _vagaService.DeleteVagaAsync(id, userId);

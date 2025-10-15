@@ -1,11 +1,13 @@
-using Entrevisto.API.Models;
-using Entrevisto.API.Services;
+using Entrevisto.Application.InputModels;
+using Entrevisto.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Entrevisto.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ScriptsController : ControllerBase
     {
         private readonly IOpenAIService _openAIService;
@@ -16,7 +18,7 @@ namespace Entrevisto.API.Controllers
         }
 
         [HttpPost("generate")]
-        public async Task<IActionResult> GenerateScript([FromBody] GenerateScriptRequest request)
+        public async Task<IActionResult> GenerateScript([FromBody] GenerateScriptInputModel request)
         {
             if (!ModelState.IsValid)
             {

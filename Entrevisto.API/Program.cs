@@ -1,35 +1,18 @@
-using Entrevisto.API.Services;
 using Entrevisto.Application.Services;
 using Entrevisto.Domain.Interfaces;
 using Entrevisto.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using Entrevisto.API.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-// Configuração de Autenticação JWT
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.Authority = builder.Configuration["Supabase:Authority"];
-    options.Audience = "authenticated";
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Supabase:Authority"],
-        ValidAudience = "authenticated"
-    };
-});
+// Configuração de Autenticação JWT com manipulador personalizado
+builder.Services.AddHttpClient();
+builder.Services.AddAuthentication("Supabase")
+    .AddScheme<AuthenticationSchemeOptions, SupabaseAuthenticationHandler>("Supabase", null);
 
 // Injeção de Dependência para Serviços e Repositórios
 builder.Services.AddHttpClient<IOpenAIService, OpenAIService>();

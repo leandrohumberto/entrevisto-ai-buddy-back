@@ -1,18 +1,17 @@
-
 using System.ComponentModel.DataAnnotations;
 
-namespace Entrevisto.Application.DTOs
+namespace Entrevisto.Application.InputModels
 {
-    public class UpdateVagaDto
+    public class UpdateVagaInputModel
     {
         [Required]
-        public string Titulo { get; set; }
+        public required string Titulo { get; set; }
 
         [Required]
-        public string DescricaoVagaOriginal { get; set; }
+        public required string DescricaoVagaOriginal { get; set; }
 
         [Required]
-        public string RoteiroPrincipal { get; set; }
+        public required string RoteiroPrincipal { get; set; }
 
         public string? RoteiroTecnico { get; set; }
         public string? RoteiroComportamental { get; set; }

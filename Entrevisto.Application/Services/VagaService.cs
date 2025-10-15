@@ -1,5 +1,5 @@
-
-using Entrevisto.Application.DTOs;
+using Entrevisto.Application.InputModels;
+using Entrevisto.Application.ViewModels;
 using Entrevisto.Domain.Entities;
 using Entrevisto.Domain.Interfaces;
 
@@ -14,26 +14,35 @@ namespace Entrevisto.Application.Services
             _vagaRepository = vagaRepository;
         }
 
-        public async Task<VagaDto> CreateVagaAsync(CreateVagaDto vagaDto, string userId)
+        public async Task<VagaViewModel> CreateVagaAsync(CreateVagaInputModel inputModel, string userId)
         {
-            // Mapeamento manual (substituir por AutoMapper depois)
             var vaga = new Vaga
             {
                 UserId = userId,
-                Titulo = vagaDto.Titulo,
-                DescricaoVagaOriginal = vagaDto.DescricaoVagaOriginal,
-                RoteiroPrincipal = vagaDto.RoteiroPrincipal,
-                RoteiroTecnico = vagaDto.RoteiroTecnico,
-                RoteiroComportamental = vagaDto.RoteiroComportamental,
-                RoteiroTriagem = vagaDto.RoteiroTriagem,
+                Titulo = inputModel.Titulo,
+                DescricaoVagaOriginal = inputModel.DescricaoVagaOriginal,
+                RoteiroPrincipal = inputModel.RoteiroPrincipal,
+                RoteiroTecnico = inputModel.RoteiroTecnico,
+                RoteiroComportamental = inputModel.RoteiroComportamental,
+                RoteiroTriagem = inputModel.RoteiroTriagem,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
 
             var novaVaga = await _vagaRepository.AddAsync(vaga);
 
-            // Mapeamento manual de volta para DTO
-            return new VagaDto { /* ... preencher propriedades ... */ };
+            return new VagaViewModel
+            {
+                Id = novaVaga.Id,
+                Titulo = novaVaga.Titulo,
+                DescricaoVagaOriginal = novaVaga.DescricaoVagaOriginal,
+                RoteiroPrincipal = novaVaga.RoteiroPrincipal,
+                RoteiroTecnico = novaVaga.RoteiroTecnico,
+                RoteiroComportamental = novaVaga.RoteiroComportamental,
+                RoteiroTriagem = novaVaga.RoteiroTriagem,
+                CreatedAt = novaVaga.CreatedAt,
+                UpdatedAt = novaVaga.UpdatedAt
+            };
         }
 
         public async Task<bool> DeleteVagaAsync(string id, string userId)
@@ -41,28 +50,60 @@ namespace Entrevisto.Application.Services
             return await _vagaRepository.DeleteAsync(id, userId);
         }
 
-        public async Task<IEnumerable<VagaDto>> GetAllVagasByUserIdAsync(string userId)
+        public async Task<IEnumerable<VagaViewModel>> GetAllVagasByUserIdAsync(string userId)
         {
             var vagas = await _vagaRepository.GetAllByUserIdAsync(userId);
-            // Mapeamento manual (substituir por AutoMapper depois)
-            return vagas.Select(v => new VagaDto { /* ... preencher ... */ });
+            
+            return vagas.Select(v => new VagaViewModel
+            {
+                Id = v.Id,
+                Titulo = v.Titulo,
+                DescricaoVagaOriginal = v.DescricaoVagaOriginal,
+                RoteiroPrincipal = v.RoteiroPrincipal,
+                RoteiroTecnico = v.RoteiroTecnico,
+                RoteiroComportamental = v.RoteiroComportamental,
+                RoteiroTriagem = v.RoteiroTriagem,
+                CreatedAt = v.CreatedAt,
+                UpdatedAt = v.UpdatedAt
+            });
         }
 
-        public async Task<VagaDto> GetVagaByIdAsync(string id, string userId)
+        public async Task<VagaViewModel> GetVagaByIdAsync(string id, string userId)
         {
             var vaga = await _vagaRepository.GetByIdAsync(id, userId);
-            // Mapeamento manual (substituir por AutoMapper depois)
-            return new VagaDto { /* ... preencher ... */ };
+            
+            if (vaga != null)
+            {
+                return new VagaViewModel
+                {
+                    Id = vaga.Id,
+                    Titulo = vaga.Titulo,
+                    DescricaoVagaOriginal = vaga.DescricaoVagaOriginal,
+                    RoteiroPrincipal = vaga.RoteiroPrincipal,
+                    RoteiroTecnico = vaga.RoteiroTecnico,
+                    RoteiroComportamental = vaga.RoteiroComportamental,
+                    RoteiroTriagem = vaga.RoteiroTriagem,
+                    CreatedAt = vaga.CreatedAt,
+                    UpdatedAt = vaga.UpdatedAt
+                };
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        public async Task<bool> UpdateVagaAsync(string id, UpdateVagaDto vagaDto, string userId)
+        public async Task<bool> UpdateVagaAsync(string id, UpdateVagaInputModel inputModel, string userId)
         {
             var vagaExistente = await _vagaRepository.GetByIdAsync(id, userId);
             if (vagaExistente == null) return false;
 
-            // Mapeamento manual (substituir por AutoMapper depois)
-            vagaExistente.Titulo = vagaDto.Titulo;
-            // ... outras propriedades
+            vagaExistente.Titulo = inputModel.Titulo;
+            vagaExistente.DescricaoVagaOriginal = inputModel.DescricaoVagaOriginal;
+            vagaExistente.RoteiroPrincipal = inputModel.RoteiroPrincipal;
+            vagaExistente.RoteiroTecnico = inputModel.RoteiroTecnico;
+            vagaExistente.RoteiroComportamental = inputModel.RoteiroComportamental;
+            vagaExistente.RoteiroTriagem = inputModel.RoteiroTriagem;
             vagaExistente.UpdatedAt = DateTime.UtcNow;
 
             return await _vagaRepository.UpdateAsync(id, vagaExistente);
