@@ -1,9 +1,10 @@
+using Entrevisto.API.Authentication;
 using Entrevisto.Application.Services;
 using Entrevisto.Domain.Interfaces;
 using Entrevisto.Infrastructure.Repositories;
-using Entrevisto.API.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,12 @@ builder.Services.AddHttpClient<IOpenAIService, OpenAIService>();
 builder.Services.AddScoped<IVagaService, VagaService>();
 builder.Services.AddSingleton<IVagaRepository, VagaRepository>(); // Singleton para o repositório Mongo
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x =>
+{
+    // Serialize enums as strings in API responses
+    x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
