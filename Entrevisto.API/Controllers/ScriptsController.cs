@@ -10,11 +10,11 @@ namespace Entrevisto.API.Controllers
     [Authorize]
     public class ScriptsController : ControllerBase
     {
-        private readonly IOpenAIService _openAIService;
+        private readonly IAiService _aiService;
 
-        public ScriptsController(IOpenAIService openAIService)
+        public ScriptsController(IAiService aiService)
         {
-            _openAIService = openAIService;
+            _aiService = aiService;
         }
 
         [HttpPost("generate")]
@@ -27,7 +27,7 @@ namespace Entrevisto.API.Controllers
 
             try
             {
-                var response = await _openAIService.GenerateScript(request);
+                var response = await _aiService.GenerateScript(request);
                 return Ok(response);
             }
             catch (Exception ex)

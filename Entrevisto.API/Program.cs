@@ -16,7 +16,7 @@ builder.Services.AddAuthentication("Supabase")
     .AddScheme<AuthenticationSchemeOptions, SupabaseAuthenticationHandler>("Supabase", null);
 
 // Injeção de Dependência para Serviços e Repositórios
-builder.Services.AddHttpClient<IOpenAIService, OpenAIService>();
+builder.Services.AddHttpClient<IAiService, OpenAiService>();
 builder.Services.AddScoped<IVagaService, VagaService>();
 builder.Services.AddSingleton<IVagaRepository, VagaRepository>(); // Singleton para o repositório Mongo
 

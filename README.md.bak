@@ -1,0 +1,81 @@
+# Entrevisto AI Buddy - Backend
+
+Este é o backend do projeto Entrevisto AI Buddy, uma API .NET construída para servir a aplicação frontend, lidando com a lógica de negócios, persistência de dados e integração com serviços de IA.
+
+## ✨ Visão Geral
+
+A API é responsável por:
+- Gerenciar vagas (CRUD).
+- Gerar roteiros de entrevista técnica e comportamental usando o modelo da OpenAI.
+- Validar a autenticação de usuários através de tokens JWT emitidos pelo Supabase.
+
+## 🏗️ Arquitetura
+
+O projeto segue os princípios da Clean Architecture, dividido nas seguintes camadas:
+- **'Entrevisto.API'**: Camada de apresentação (entrypoint), responsável por expor os endpoints da API.
+- **'Entrevisto.Application'**: Contém a lógica de aplicação, serviços e casos de uso.
+- **'Entrevisto.Domain'**: Contém as entidades de negócio e as interfaces dos repositórios.
+- **'Entrevisto.Infrastructure'**: Implementa os repositórios e a comunicação com serviços externos (banco de dados).
+
+## 🚀 Tecnologias Utilizadas
+
+- **[.NET 8](https://dotnet.microsoft.com/download/dotnet/8.0)** - Framework principal para a construção da API.
+- **[ASP.NET Core](https://docs.microsoft.com/aspnet/core)** - Para a criação de endpoints RESTful.
+- **[Supabase](https://supabase.io)** - Utilizado para autenticação (validação de JWT).
+- **[OpenAI API](https://platform.openai.com)** - Para a geração de conteúdo de IA.
+
+## ⚙️ Configuração e Execução
+
+### Pré-requisitos
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- Um editor de código de sua preferência (Visual Studio, VS Code, Rider).
+
+### 1. Configuração do Ambiente
+Para rodar o projeto, você precisa configurar as chaves de API e os segredos no arquivo 'appsettings.Development.json'.
+
+1.  Navegue até 'entrevisto-ai-buddy-back/Entrevisto/Entrevisto.API/'.
+2.  Renomeie ou crie uma cópia de 'appsettings.json' para 'appsettings.Development.json'.
+3.  Adicione as seguintes configurações ao arquivo:
+
+'''json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "Supabase": {
+    "Url": "URL_DO_SEU_PROJETO_SUPABASE",
+    "PublicKey": "SUA_PUBLIC_KEY_SUPABASE",
+    "JwtSecret": "SEU_SEGREDO_JWT_SUPABASE"
+  },
+  "OpenAI": {
+    "ApiKey": "SUA_API_KEY_DA_OPENAI"
+  }
+}
+'''
+
+**Importante:** O 'JwtSecret' é crucial para a validação dos tokens de usuário. Você pode encontrá-lo nas configurações de JWT do seu projeto Supabase.
+
+### 2. Executando a Aplicação
+Abra um terminal na pasta raiz do projeto da API ('entrevisto-ai-buddy-back/Entrevisto/Entrevisto.API/') e execute o seguinte comando:
+
+'''bash
+dotnet run
+'''
+
+Por padrão, a API será executada em 'http://localhost:5186'.
+
+## Endpoints da API
+
+Todos os endpoints requerem um token de autenticação JWT (Bearer Token) no header da requisição.
+
+- **'POST /api/scripts/generate'**: Gera um roteiro de entrevista.
+- **'GET /api/vagas'**: Lista todas as vagas do usuário autenticado.
+- **'GET /api/vagas/{id}'**: Obtém os detalhes de uma vaga específica.
+- **'POST /api/vagas'**: Cria uma nova vaga.
+- **'PUT /api/vagas/{id}'**: Atualiza uma vaga existente.
+- **'DELETE /api/vagas/{id}'**: Deleta uma vaga.
+

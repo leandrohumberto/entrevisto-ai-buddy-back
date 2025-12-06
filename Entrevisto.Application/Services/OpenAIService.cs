@@ -2,17 +2,16 @@ using Entrevisto.Application.InputModels;
 using Entrevisto.Application.ViewModels;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
-using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Text.Json.Serialization;
 
 namespace Entrevisto.Application.Services
 {
-    public class OpenAIService : IOpenAIService
+    public class OpenAiService : IAiService
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
 
-        public OpenAIService(HttpClient httpClient, IConfiguration configuration)
+        public OpenAiService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _configuration = configuration;
@@ -36,18 +35,32 @@ namespace Entrevisto.Application.Services
 
             var (systemPrompt, userPrompt) = GetPrompts(request);
 
-            var openAIRequest = new
+            var openAiRequest = new OpenAiRequest
             {
-                model = openAiModel,
-                messages = new[]
-                {
-                    new { role = "system", content = systemPrompt },
-                    new { role = "user", content = userPrompt }
-                },
-                temperature = 0.7,
+                Model = openAiModel,
+                Input =
+                [
+                    new Input
+                    {
+                        Role = "system",
+                        Content =
+                        [
+                            new InputContent { Type = "input_text", Text = systemPrompt }
+                        ]
+                    },
+                    new Input
+                    {
+                        Role = "user",
+                        Content =
+                        [
+                            new InputContent { Type = "input_text", Text = userPrompt }
+                        ]
+                    },
+                ],
+                Temperature = 0.7,
             };
 
-            var response = await _httpClient.PostAsJsonAsync("https://api.openai.com/v1/chat/completions", openAIRequest);
+            var response = await _httpClient.PostAsJsonAsync("https://api.openai.com/v1/responses", openAiRequest);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -55,11 +68,11 @@ namespace Entrevisto.Application.Services
                 throw new Exception($"Error calling API: {error}");
             }
 
-            var openAIResponse = await response.Content.ReadFromJsonAsync<OpenAIResponse>();
+            var openAiResponse = await response.Content.ReadFromJsonAsync<OpenAiResponse>();
 
             return new GenerateScriptViewModel
             {
-                Script = openAIResponse.choices[0].message.content
+                Script = openAiResponse?.Output?.FirstOrDefault()?.Content?.FirstOrDefault()?.Text ?? string.Empty
             };
         }
 
@@ -96,19 +109,52 @@ namespace Entrevisto.Application.Services
             return (systemPrompt, userPrompt);
         }
 
-        private class OpenAIResponse
+        private class OpenAiRequest
         {
-            public Choice[] choices { get; set; }
+            [JsonPropertyName("model")]
+            public string Model { get; set; } = string.Empty;
+
+            [JsonPropertyName("input")]
+            public Input[] Input { get; set; } = [];
+
+            [JsonPropertyName("temperature")]
+            public double Temperature { get; set; }
         }
 
-        private class Choice
+        private class Input
         {
-            public Message message { get; set; }
+            [JsonPropertyName("role")]
+            public string Role { get; set; } = string.Empty;
+
+            [JsonPropertyName("content")]
+            public InputContent[] Content { get; set; } = [];
         }
 
-        private class Message
+        private class InputContent
         {
-            public string content { get; set; }
+            [JsonPropertyName("type")]
+            public string Type { get; set; } = string.Empty;
+
+            [JsonPropertyName("text")]
+            public string Text { get; set; } = string.Empty;
+        }
+
+        private class OpenAiResponse
+        {
+            [JsonPropertyName("output")]
+            public Output[] Output { get; set; } = [];
+        }
+
+        private class Output
+        {
+            [JsonPropertyName("content")]
+            public OutputContent[] Content { get; set; } = [];
+        }
+
+        private class OutputContent
+        {
+            [JsonPropertyName("text")]
+            public string Text { get; set; } = string.Empty;
         }
     }
 }
