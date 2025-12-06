@@ -46,18 +46,23 @@ Para rodar o projeto, você precisa configurar as chaves de API e os segredos no
     }
   },
   "AllowedHosts": "*",
-  "Supabase": {
-    "Url": "URL_DO_SEU_PROJETO_SUPABASE",
-    "PublicKey": "SUA_PUBLIC_KEY_SUPABASE",
-    "JwtSecret": "SEU_SEGREDO_JWT_SUPABASE"
+  "MongoDbSettings": {
+    "ConnectionString": "mongodb://localhost:27017",
+    "DatabaseName": "EntrevistoDb",
+    "CollectionName": "Vagas"
   },
   "OpenAI": {
-    "ApiKey": "SUA_API_KEY_DA_OPENAI"
+    "ApiKey": "SUA_API_KEY_DA_OPENAI",
+    "Model": "gpt-4o-mini"
+  },
+  "Supabase": {
+    "Authority": "URL_DA_SUA_AUTH_API_SUPABASE",
+    "ApiKey": "SUA_SERVICE_ROLE_KEY_SUPABASE"
   }
 }
 ```
 
-**Importante:** O `JwtSecret` é crucial para a validação dos tokens de usuário. Você pode encontrá-lo nas configurações de JWT do seu projeto Supabase.
+**Importante:** A `ApiKey` do Supabase deve ser a sua **`service_role` key**. Ela é necessária para que o backend possa validar os tokens de usuário diretamente com a API do Supabase. Você pode encontrá-la nas configurações de API do seu projeto Supabase.
 
 ### 2. Executando a Aplicação
 Abra um terminal na pasta raiz do projeto da API (`entrevisto-ai-buddy-back/Entrevisto/Entrevisto.API/`) e execute o seguinte comando:
