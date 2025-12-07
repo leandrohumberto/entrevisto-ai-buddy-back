@@ -1,6 +1,5 @@
 using Entrevisto.Application.InputModels;
 using Entrevisto.Application.ViewModels;
-using Entrevisto.Domain.Entities;
 using Entrevisto.Domain.Interfaces;
 
 namespace Entrevisto.Application.Services
@@ -16,33 +15,11 @@ namespace Entrevisto.Application.Services
 
         public async Task<VagaViewModel> CreateVagaAsync(CreateVagaInputModel inputModel, string userId)
         {
-            var vaga = new Vaga
-            {
-                UserId = userId,
-                Titulo = inputModel.Titulo,
-                DescricaoVagaOriginal = inputModel.DescricaoVagaOriginal,
-                RoteiroPrincipal = inputModel.RoteiroPrincipal,
-                RoteiroTecnico = inputModel.RoteiroTecnico,
-                RoteiroComportamental = inputModel.RoteiroComportamental,
-                RoteiroTriagem = inputModel.RoteiroTriagem,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+            var vaga = inputModel.ToVaga(userId);
 
             var novaVaga = await _vagaRepository.AddAsync(vaga);
 
-            return new VagaViewModel
-            {
-                Id = novaVaga.Id,
-                Titulo = novaVaga.Titulo,
-                DescricaoVagaOriginal = novaVaga.DescricaoVagaOriginal,
-                RoteiroPrincipal = novaVaga.RoteiroPrincipal,
-                RoteiroTecnico = novaVaga.RoteiroTecnico,
-                RoteiroComportamental = novaVaga.RoteiroComportamental,
-                RoteiroTriagem = novaVaga.RoteiroTriagem,
-                CreatedAt = novaVaga.CreatedAt,
-                UpdatedAt = novaVaga.UpdatedAt
-            };
+            return VagaViewModel.FromVaga(novaVaga);
         }
 
         public async Task<bool> DeleteVagaAsync(string id, string userId)
@@ -54,18 +31,7 @@ namespace Entrevisto.Application.Services
         {
             var vagas = await _vagaRepository.GetAllByUserIdAsync(userId);
             
-            return vagas.Select(v => new VagaViewModel
-            {
-                Id = v.Id,
-                Titulo = v.Titulo,
-                DescricaoVagaOriginal = v.DescricaoVagaOriginal,
-                RoteiroPrincipal = v.RoteiroPrincipal,
-                RoteiroTecnico = v.RoteiroTecnico,
-                RoteiroComportamental = v.RoteiroComportamental,
-                RoteiroTriagem = v.RoteiroTriagem,
-                CreatedAt = v.CreatedAt,
-                UpdatedAt = v.UpdatedAt
-            });
+            return vagas.Select(v => VagaViewModel.FromVaga(v));
         }
 
         public async Task<VagaViewModel> GetVagaByIdAsync(string id, string userId)
@@ -74,18 +40,7 @@ namespace Entrevisto.Application.Services
             
             if (vaga != null)
             {
-                return new VagaViewModel
-                {
-                    Id = vaga.Id,
-                    Titulo = vaga.Titulo,
-                    DescricaoVagaOriginal = vaga.DescricaoVagaOriginal,
-                    RoteiroPrincipal = vaga.RoteiroPrincipal,
-                    RoteiroTecnico = vaga.RoteiroTecnico,
-                    RoteiroComportamental = vaga.RoteiroComportamental,
-                    RoteiroTriagem = vaga.RoteiroTriagem,
-                    CreatedAt = vaga.CreatedAt,
-                    UpdatedAt = vaga.UpdatedAt
-                };
+                return VagaViewModel.FromVaga(vaga);
             }
             else
             {

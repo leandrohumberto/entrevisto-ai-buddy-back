@@ -8,14 +8,14 @@ namespace Entrevisto.Domain.Entities
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         [BsonElement("UserId")]
-        public string UserId { get; set; }
+        public required string UserId { get; set; }
 
-        public string Titulo { get; set; }
-        public string DescricaoVagaOriginal { get; set; }
-        public string RoteiroPrincipal { get; set; }
+        public required string Titulo { get; set; }
+        public required string DescricaoVagaOriginal { get; set; }
+        public required string RoteiroPrincipal { get; set; }
         public string? RoteiroTecnico { get; set; }
         public string? RoteiroComportamental { get; set; }
         public string? RoteiroTriagem { get; set; }
